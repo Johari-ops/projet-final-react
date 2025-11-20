@@ -1,11 +1,12 @@
 import './App.css'
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import { getPlants } from './services/apiServices';
+import Books from './pages/Books';
+import Perso from './pages/Perso';
+import Houses from './pages/Houses';
+import Spells from './pages/Spells';
 
 function App() {
-
-  console.log(getPlants());
   return (
     <>
       <Stack spacing={2} direction="row">
@@ -13,6 +14,10 @@ function App() {
         <Button variant="contained">Contained</Button>
         <Button variant="outlined">Outlined</Button>
       </Stack>
+      <Books />
+      <Perso />
+      <Houses />
+      <Spells />
     </>
   )
 }
