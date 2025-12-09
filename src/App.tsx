@@ -1,25 +1,57 @@
-import './App.css'
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Books from './pages/Books';
-import Perso from './pages/Perso';
-import Houses from './pages/Houses';
-import Spells from './pages/Spells';
+import Home from './pages/Home';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import Login from './pages/Login';
+import { useEffect, useState } from 'react';
+import { IconButton, Box } from '@mui/material';
+
 
 function App() {
+  const [darkMode, setDarkMode] = useState(true);
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+    },
+  });
+
+  const lightTheme = createTheme({
+    palette: {
+      mode: 'light',
+    },
+  });
+
+
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
+
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
     <>
-      <Stack spacing={2} direction="row">
-        <Button variant="text" >Text</Button>
-        <Button variant="contained">Contained</Button>
-        <Button variant="outlined">Outlined</Button>
-      </Stack>
-      <Books />
-      <Perso />
-      <Houses />
-      <Spells />
+      <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+        <CssBaseline />
+        <Box sx={{ position: 'fixed', top: 10, right: 10 }}>
+          <IconButton onClick={toggleDarkMode} color="inherit">
+            {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+        </Box>
+        {isLoggedIn ? <Home /> : <Login onLogin={handleLogin} />}
+      </ThemeProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

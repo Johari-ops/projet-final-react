@@ -1,8 +1,8 @@
 import axios from 'axios';
-import type { Book } from '../interfaces/Books';
-import type { Perso } from '../interfaces/Perso';
-import type { House } from '../interfaces/House';
-import type { Spell } from '../interfaces/Spells';
+import type { Book } from '../models/Books';
+import type { Perso } from '../models/Perso';
+import type { House } from '../models/House';
+import type { Spell } from '../models/Spells';
 
 async function getBooks(): Promise<Book[]> {
   try {
