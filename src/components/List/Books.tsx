@@ -34,51 +34,78 @@ const Books = () => {
         Livres :
       </Typography>
       <Swiper
-  modules={[Navigation, Autoplay]}
-  navigation
-  spaceBetween={20}
-  slidesPerView={5}
-  grabCursor={true}
-  autoplay={{ delay: 3000, disableOnInteraction: false }}
->
-  {books.map((book, index) => (
-    <SwiperSlide
-      key={book.number}
-      style={{
-        display: "flex",
-        height: "auto",
-      }}
-    >
-      <Card
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
+        modules={[Navigation, Autoplay]}
+        navigation
+        spaceBetween={20}
+        slidesPerView={5}
+        grabCursor={true}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        breakpoints={{
+          // Mobile (xs) - 1 carte
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 10,
+          },
+          // Petit écran (sm) - 2 cartes
+          600: {
+            slidesPerView: 2,
+            spaceBetween: 15,
+          },
+          // Tablette (md) - 3 cartes
+          900: {
+            slidesPerView: 3,
+            spaceBetween: 20,
+          },
+          // Desktop (lg) - 5 cartes
+          1200: {
+            slidesPerView: 5,
+            spaceBetween: 20,
+          },
+          // Large desktop (xl) - 6 cartes
+          1536: {
+            slidesPerView: 6,
+            spaceBetween: 20,
+          },
         }}
       >
-        <CardActionArea
-          onClick={() => setSelectedCard(index)}
-          data-active={selectedCard === index ? "" : undefined}
-          sx={{
-            flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            '&[data-active]': {
-              backgroundColor: 'action.selected',
-              '&:hover': {
-                backgroundColor: 'action.selectedHover',
-              },
-            },
-          }}
-        >
-          <CardMedia
-            component="img"
-            image={book.cover}
-            alt={`Couverture de ${book.title}`}
-            style={{ width: "100%", height: "auto" }}
-          />
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+        {books.map((book, index) => (
+          <SwiperSlide
+            key={book.number}
+            style={{
+              display: "flex",
+              height: "auto",
+            }}
+          >
+            <Card
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <CardActionArea
+                onClick={() => setSelectedCard(index)}
+                data-active={selectedCard === index ? "" : undefined}
+                sx={{
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  '&[data-active]': {
+                    backgroundColor: 'action.selected',
+                    '&:hover': {
+                      backgroundColor: 'action.selectedHover',
+                    },
+                  },
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={book.cover}
+                  alt={`Couverture de ${book.title}`}
+                  style={{ width: "100%", height: "auto" }}
+                />
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
                     {book.title}
                   </Typography>
 
@@ -88,16 +115,16 @@ const Books = () => {
                       ? book.description.slice(0, 50) + '...'
                       : book.description}
                   </Typography>
-          </CardContent>
-        </CardActionArea>
+                </CardContent>
+              </CardActionArea>
 
-        <CardActions>
-          <Button size="small">Voir plus</Button>
-        </CardActions>
-      </Card>
-    </SwiperSlide>
-  ))}
-</Swiper>
+              <CardActions>
+                <Button size="small">Voir plus</Button>
+              </CardActions>
+            </Card>
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
     </Box>
   );

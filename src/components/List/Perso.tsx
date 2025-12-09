@@ -40,6 +40,33 @@ const Perso = () => {
           slidesPerView={5}
           grabCursor={true}
           autoplay={{ delay: 3000, disableOnInteraction: false }}
+          breakpoints={{
+            // Mobile (xs) - 1 carte
+            320: {
+              slidesPerView: 1,
+              spaceBetween: 10,
+            },
+            // Petit écran (sm) - 2 cartes
+            600: {
+              slidesPerView: 2,
+              spaceBetween: 15,
+            },
+            // Tablette (md) - 3 cartes
+            900: {
+              slidesPerView: 3,
+              spaceBetween: 20,
+            },
+            // Desktop (lg) - 5 cartes
+            1200: {
+              slidesPerView: 5,
+              spaceBetween: 20,
+            },
+            // Large desktop (xl) - 6 cartes
+            1536: {
+              slidesPerView: 6,
+              spaceBetween: 20,
+            },
+          }}
           >
           {personnages.map((perso, index) => (
             <SwiperSlide key={perso.index}

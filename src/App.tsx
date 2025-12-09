@@ -1,12 +1,8 @@
 import Home from './pages/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
 import Login from './pages/Login';
 import { useEffect, useState } from 'react';
-import { IconButton, Box } from '@mui/material';
-
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -23,11 +19,9 @@ function App() {
     },
   });
 
-
   useEffect(() => {
     localStorage.clear();
   }, []);
-
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -43,12 +37,11 @@ function App() {
     <>
       <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
         <CssBaseline />
-        <Box sx={{ position: 'fixed', top: 10, right: 10 }}>
-          <IconButton onClick={toggleDarkMode} color="inherit">
-            {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
-        </Box>
-        {isLoggedIn ? <Home /> : <Login onLogin={handleLogin} />}
+        {isLoggedIn ? (
+          <Home darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        ) : (
+          <Login onLogin={handleLogin} />
+        )}
       </ThemeProvider>
     </>
   );

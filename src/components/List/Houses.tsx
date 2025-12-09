@@ -36,9 +36,38 @@ const Houses = () => {
           modules={[Navigation]}
           navigation
           spaceBetween={20}
-          slidesPerView={5}
+          slidesPerView={1}
           grabCursor={true}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          breakpoints={{
+            // Mobile (xs) - 1 carte
+            320: {
+              slidesPerView: 1,
+              spaceBetween: 10,
+            },
+            // Petit écran (sm) - 2 cartes
+            600: {
+              slidesPerView: 2,
+              spaceBetween: 15,
+            },
+            // Tablette (md) - 3 cartes
+            900: {
+              slidesPerView: 3,
+              spaceBetween: 20,
+            },
+            // Desktop (lg) - 4 cartes
+            1200: {
+              slidesPerView: 4,
+              spaceBetween: 20,
+            },
+            // Large desktop (xl) - 5 cartes
+            1536: {
+              slidesPerView: 5,
+              spaceBetween: 20,
+            },
+          }}
         >
+
           {houses.map((house, index) => (
             <SwiperSlide key={house.index}>
               <Card>
