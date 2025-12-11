@@ -35,7 +35,14 @@ const Login = ({ onLogin }: { onLogin: () => void }) => {
     setStoredNom(data.nom);
     setStoredPrenom(data.prenom);
     setStoredEmail(data.email);
-    onLogin();
+
+    // Attend que le localStorage soit mis à jour
+    setTimeout(() => {
+      console.log('Nom stocké:', localStorage.getItem('nom'));
+      console.log('Prenom stocké:', localStorage.getItem('prenom'));
+      console.log('Email stocké:', localStorage.getItem('email'));
+      onLogin();
+    }, 0);
   };
 
   return (

@@ -3,9 +3,10 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
+import CardActions from '@mui/material/CardActions';
 import { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import type { Spell } from '../../models/Spells';
@@ -13,13 +14,12 @@ import { useQuery } from '@tanstack/react-query';
 import { getSpells } from '../../services/apiServices';
 import { useFavorites } from '../../hooks/useFavorites';
 import IconButton from '@mui/material/IconButton';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
-import { CardActions } from '@mui/material';
 
-const Spells = () => {
+const FavoriteSpells = () => {
   const [selectedCard, setSelectedCard] = useState(0);
-  const { toggleFavorite, isFavorite, favorites } = useFavorites('spell-favorites');
+  const { toggleFavorite, favorites } = useFavorites('spell-favorites');
+
   const {
     data: spells = [],
     isLoading,
@@ -29,81 +29,76 @@ const Spells = () => {
     queryFn: () => getSpells(),
   });
 
-  const handleToggleFavorite = (id: string) => {
-    toggleFavorite(id);
-    console.log('Favoris avant:', favorites);
-    console.log('ID togglé:', id);
-  };
-
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>{error.message}</div>;
 
+  // Filtrer uniquement les sorts favoris
+  const favoriteSpells = spells.filter((spell) => favorites.includes(spell.index.toString()));
+
   return (
-    <>
-      <Box sx={{ width: '100%', mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
+    <Box sx={{ width: '100%', mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: 600,
+          mb: 2,
+          px: { xs: 2, sm: 10, md: 0.5 },
+        }}
+      >
+        Mes Sorts Favoris ({favoriteSpells.length})
+      </Typography>
+
+      {favoriteSpells.length === 0 ? (
         <Typography
-          variant="h4"
+          variant="body1"
           sx={{
-            fontWeight: 600,
-            mb: 2,
             px: { xs: 2, sm: 10, md: 0.5 },
+            color: 'text.secondary',
+            textAlign: 'center',
+            py: 4,
           }}
         >
-          Sorts :
+          Aucun sort favori pour le moment. Ajoutez des sorts à vos favoris !
         </Typography>
+      ) : (
         <Swiper
-          modules={[Navigation, Autoplay]}
+          modules={[Navigation]}
           navigation
           spaceBetween={20}
-          slidesPerView={5}
-          centeredSlides={false}
-          centerInsufficientSlides={false}
+          slidesPerView={1}
           grabCursor={true}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
           breakpoints={{
-            // Mobile (xs) - 1 carte
-            320: {
-              slidesPerView: 1,
-              spaceBetween: 10,
-            },
-            // Petit écran (sm) - 2 cartes
-            600: {
-              slidesPerView: 2,
-              spaceBetween: 15,
-            },
-            // Tablette (md) - 3 cartes
-            900: {
-              slidesPerView: 3,
-              spaceBetween: 20,
-            },
-            // Desktop (lg) - 4 cartes
-            1200: {
-              slidesPerView: 4,
-              spaceBetween: 20,
-            },
-            // Large desktop (xl) - 5 cartes
-            1536: {
-              slidesPerView: 5,
-              spaceBetween: 20,
-            },
+            320: { slidesPerView: 1, spaceBetween: 10 },
+            600: { slidesPerView: 2, spaceBetween: 15 },
+            900: { slidesPerView: 3, spaceBetween: 20 },
+            1200: { slidesPerView: 4, spaceBetween: 20 },
+            1536: { slidesPerView: 5, spaceBetween: 20 },
           }}
         >
-          {spells.map((spell, index) => (
+          {favoriteSpells.map((spell, index) => (
             <SwiperSlide key={spell.index} style={{ height: 'auto' }}>
-              <Card sx={{ height: '100%' }}>
+              <Card
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                }}
+              >
                 <CardActionArea
                   onClick={() => setSelectedCard(index)}
                   data-active={selectedCard === index ? '' : undefined}
                   sx={{
-                    height: '100%',
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
                     '&[data-active]': {
                       backgroundColor: 'action.selected',
                       '&:hover': { backgroundColor: 'action.selectedHover' },
                     },
                   }}
                 >
-                  <CardContent sx={{ height: '100%' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
                       {spell.spell}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -111,28 +106,26 @@ const Spells = () => {
                     </Typography>
                   </CardContent>
                 </CardActionArea>
-                <CardActions>
-                  <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1, pl: 2 }}>
-                    Niveau :
-                  </Typography>
+
+                <CardActions sx={{ justifyContent: 'flex-end' }}>
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleToggleFavorite(spell.index.toString());
+                      toggleFavorite(spell.index.toString());
                     }}
                     color="error"
-                    aria-label="ajouter aux favoris"
+                    aria-label="retirer des favoris"
                   >
-                    {isFavorite(spell.index.toString()) ? <Favorite /> : <FavoriteBorder />}
+                    <Favorite />
                   </IconButton>
                 </CardActions>
               </Card>
             </SwiperSlide>
           ))}
         </Swiper>
-      </Box>
-    </>
+      )}
+    </Box>
   );
 };
 
-export default Spells;
+export default FavoriteSpells;

@@ -15,12 +15,11 @@ import { useQuery } from '@tanstack/react-query';
 import { getHouses } from '../../services/apiServices';
 import { useFavorites } from '../../hooks/useFavorites';
 import IconButton from '@mui/material/IconButton';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 
-const Houses = () => {
+const FavoriteHouses = () => {
   const [selectedCard, setSelectedCard] = useState(0);
-  const { toggleFavorite, isFavorite, favorites } = useFavorites('houses-favorites');
+  const { toggleFavorite, favorites } = useFavorites('houses-favorites');
 
   const {
     data: houses = [],
@@ -34,63 +33,58 @@ const Houses = () => {
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>{error.message}</div>;
 
-  const handleToggleFavorite = (id: string) => {
-    toggleFavorite(id);
-    console.log('Favoris avant:', favorites);
-    console.log('ID togglé:', id);
-  };
+  // Filtrer uniquement les maisons favorites
+  const favoriteHouses = houses.filter((house) => favorites.includes(house.index.toString()));
 
   return (
-    <>
-      <Box sx={{ width: '100%', mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
+    <Box sx={{ width: '100%', mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: 600,
+          mb: 2,
+          px: { xs: 2, sm: 10, md: 0.5 },
+        }}
+      >
+        Mes Maisons Favorites ({favoriteHouses.length})
+      </Typography>
+
+      {favoriteHouses.length === 0 ? (
         <Typography
-          variant="h4"
+          variant="body1"
           sx={{
-            fontWeight: 600,
-            mb: 2,
             px: { xs: 2, sm: 10, md: 0.5 },
+            color: 'text.secondary',
+            textAlign: 'center',
+            py: 4,
           }}
         >
-          Maisons :
+          Aucune maison favorite pour le moment. Ajoutez des maisons à vos favoris !
         </Typography>
+      ) : (
         <Swiper
           modules={[Navigation]}
           navigation
           spaceBetween={20}
           slidesPerView={1}
           grabCursor={true}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
           breakpoints={{
-            // Mobile (xs) - 1 carte
-            320: {
-              slidesPerView: 1,
-              spaceBetween: 10,
-            },
-            // Petit écran (sm) - 2 cartes
-            600: {
-              slidesPerView: 2,
-              spaceBetween: 15,
-            },
-            // Tablette (md) - 3 cartes
-            900: {
-              slidesPerView: 3,
-              spaceBetween: 20,
-            },
-            // Desktop (lg) - 4 cartes
-            1200: {
-              slidesPerView: 4,
-              spaceBetween: 20,
-            },
-            // Large desktop (xl) - 5 cartes
-            1536: {
-              slidesPerView: 5,
-              spaceBetween: 20,
-            },
+            320: { slidesPerView: 1, spaceBetween: 10 },
+            600: { slidesPerView: 2, spaceBetween: 15 },
+            900: { slidesPerView: 3, spaceBetween: 20 },
+            1200: { slidesPerView: 4, spaceBetween: 20 },
+            1536: { slidesPerView: 5, spaceBetween: 20 },
           }}
         >
-          {houses.map((house, index) => (
+          {favoriteHouses.map((house, index) => (
             <SwiperSlide key={house.index}>
-              <Card>
+              <Card
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                }}
+              >
                 <CardActionArea
                   onClick={() => setSelectedCard(index)}
                   data-active={selectedCard === index ? '' : undefined}
@@ -118,31 +112,30 @@ const Houses = () => {
                       {house.animal}
                       <br />
                       {house.colors.join(', ')}
-                      <br />
                     </Typography>
                   </CardContent>
                 </CardActionArea>
 
-                <CardActions>
+                <CardActions sx={{ justifyContent: 'space-between' }}>
                   <Button size="small">Voir plus</Button>
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleToggleFavorite(house.index.toString());
+                      toggleFavorite(house.index.toString());
                     }}
                     color="error"
-                    aria-label="ajouter aux favoris"
+                    aria-label="retirer des favoris"
                   >
-                    {isFavorite(house.index.toString()) ? <Favorite /> : <FavoriteBorder />}
+                    <Favorite />
                   </IconButton>
                 </CardActions>
               </Card>
             </SwiperSlide>
           ))}
         </Swiper>
-      </Box>
-    </>
+      )}
+    </Box>
   );
 };
 
-export default Houses;
+export default FavoriteHouses;

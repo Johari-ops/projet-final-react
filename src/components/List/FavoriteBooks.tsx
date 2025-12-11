@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+// components/List/FavoriteBooks.tsx
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -8,12 +9,9 @@ import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { getBooks } from '../../services/apiServices';
@@ -21,10 +19,9 @@ import { useQuery } from '@tanstack/react-query';
 import type { Book } from '../../models/Books';
 import { useFavorites } from '../../hooks/useFavorites';
 
-const Books = () => {
+const FavoriteBooks = () => {
   const [selectedCard, setSelectedCard] = useState(0);
-  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
-  const { toggleFavorite, isFavorite, favorites } = useFavorites('books-favorites');
+  const { toggleFavorite, favorites } = useFavorites('books-favorites');
 
   const {
     data: books = [],
@@ -35,102 +32,45 @@ const Books = () => {
     queryFn: () => getBooks(),
   });
 
-  // Log des favoris à chaque changement
-  useEffect(() => {
-    if (favorites.length > 0) {
-      console.log('📚 Favoris de books:', favorites);
-      console.log('📚 Nombre de favoris:', favorites.length);
-    }
-  }, [favorites]);
-
-  // Filtrer selon le toggle
-  const displayedBooks = showOnlyFavorites ? books.filter((book) => favorites.includes(book.number.toString())) : books;
+  // Filtrer uniquement les livres favoris
+  const favoriteBooks = books.filter((book) => favorites.includes(book.number.toString()));
 
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>{error.message}</div>;
 
   return (
     <Box sx={{ width: '100%', mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
-      <Box
+      <Typography
+        variant="h4"
         sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          fontWeight: 600,
           mb: 2,
           px: { xs: 2, sm: 10, md: 0.5 },
-          flexWrap: 'wrap',
-          gap: 2,
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: 600,
-          }}
-        >
-          Livres {showOnlyFavorites && `(${displayedBooks.length} favoris)`}
-        </Typography>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={showOnlyFavorites}
-              onChange={(e) => setShowOnlyFavorites(e.target.checked)}
-              color="primary"
-            />
-          }
-          label="Favoris uniquement"
-        />
-      </Box>
+        Mes Livres Favoris ({favoriteBooks.length})
+      </Typography>
 
-      {displayedBooks.length === 0 && showOnlyFavorites ? (
-        <Typography
-          variant="body1"
-          sx={{
-            px: { xs: 2, sm: 10, md: 0.5 },
-            color: 'text.secondary',
-            textAlign: 'center',
-            py: 4,
-          }}
-        >
-          Aucun livre favori pour le moment. Cliquez sur ❤️ pour ajouter des livres à vos favoris !
+      {favoriteBooks.length === 0 ? (
+        <Typography variant="body1" sx={{ px: { xs: 2, sm: 10, md: 0.5 }, color: 'text.secondary' }}>
+          Aucun livre favori pour le moment. Ajoutez des livres à vos favoris !
         </Typography>
       ) : (
         <Swiper
-          modules={[Navigation, Autoplay]}
+          modules={[Navigation]}
           navigation
           spaceBetween={20}
           slidesPerView={5}
           grabCursor={true}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
           breakpoints={{
-            // Mobile (xs) - 1 carte
-            320: {
-              slidesPerView: 1,
-              spaceBetween: 10,
-            },
-            // Petit écran (sm) - 2 cartes
-            600: {
-              slidesPerView: 2,
-              spaceBetween: 15,
-            },
-            // Tablette (md) - 3 cartes
-            900: {
-              slidesPerView: 3,
-              spaceBetween: 20,
-            },
-            // Desktop (lg) - 5 cartes
-            1200: {
-              slidesPerView: 5,
-              spaceBetween: 20,
-            },
-            // Large desktop (xl) - 6 cartes
-            1536: {
-              slidesPerView: 6,
-              spaceBetween: 20,
-            },
+            320: { slidesPerView: 1, spaceBetween: 10 },
+            600: { slidesPerView: 2, spaceBetween: 15 },
+            900: { slidesPerView: 3, spaceBetween: 20 },
+            1200: { slidesPerView: 5, spaceBetween: 20 },
+            1536: { slidesPerView: 6, spaceBetween: 20 },
           }}
         >
-          {displayedBooks.map((book, index) => (
+          {favoriteBooks.map((book, index) => (
             <SwiperSlide
               key={book.number}
               style={{
@@ -185,9 +125,9 @@ const Books = () => {
                       toggleFavorite(book.number.toString());
                     }}
                     color="error"
-                    aria-label={isFavorite(book.number.toString()) ? 'retirer des favoris' : 'ajouter aux favoris'}
+                    aria-label="retirer des favoris"
                   >
-                    {isFavorite(book.number.toString()) ? <Favorite /> : <FavoriteBorder />}
+                    <Favorite />
                   </IconButton>
                 </CardActions>
               </Card>
@@ -199,4 +139,4 @@ const Books = () => {
   );
 };
 
-export default Books;
+export default FavoriteBooks;

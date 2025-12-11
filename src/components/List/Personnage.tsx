@@ -14,8 +14,13 @@ import 'swiper/css/navigation';
 import { getPerso } from '../../services/apiServices';
 import { useQuery } from '@tanstack/react-query';
 import type { Perso } from '../../models/Perso';
+import { useFavorites } from '../../hooks/useFavorites';
+import IconButton from '@mui/material/IconButton';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
 
 const Personnage = () => {
+  const { toggleFavorite, isFavorite, favorites } = useFavorites('perso-favorites');
   const [selectedCard, setSelectedCard] = useState(0);
 
   const {
@@ -29,6 +34,12 @@ const Personnage = () => {
 
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>{error.message}</div>;
+
+  const handleToggleFavorite = (id: string) => {
+    toggleFavorite(id);
+    console.log('Favoris avant:', favorites);
+    console.log('ID togglé:', id);
+  };
 
   return (
     <>
@@ -125,6 +136,16 @@ const Personnage = () => {
 
                 <CardActions>
                   <Button size="small">Voir plus</Button>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFavorite(perso.index.toString());
+                    }}
+                    color="error"
+                    aria-label="ajouter aux favoris"
+                  >
+                    {isFavorite(perso.index.toString()) ? <Favorite /> : <FavoriteBorder />}
+                  </IconButton>
                 </CardActions>
               </Card>
             </SwiperSlide>

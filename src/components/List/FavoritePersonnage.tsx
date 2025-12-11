@@ -1,50 +1,52 @@
-import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import CardActionArea from '@mui/material/CardActionArea';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
+import { CardActionArea } from '@mui/material';
+import { useState, useEffect } from 'react';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import Favorite from '@mui/icons-material/Favorite';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { getBooks } from '../../services/apiServices';
+import { getPerso } from '../../services/apiServices';
 import { useQuery } from '@tanstack/react-query';
-import type { Book } from '../../models/Books';
+import type { Perso } from '../../models/Perso';
 import { useFavorites } from '../../hooks/useFavorites';
+import IconButton from '@mui/material/IconButton';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
 
-const Books = () => {
+const Personnage = () => {
   const [selectedCard, setSelectedCard] = useState(0);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
-  const { toggleFavorite, isFavorite, favorites } = useFavorites('books-favorites');
+  const { toggleFavorite, isFavorite, favorites } = useFavorites('perso-favorites');
 
   const {
-    data: books = [],
+    data: personnages = [],
     isLoading,
     error,
-  } = useQuery<Book[], Error>({
-    queryKey: ['book-list'],
-    queryFn: () => getBooks(),
+  } = useQuery<Perso[], Error>({
+    queryKey: ['perso-list'],
+    queryFn: () => getPerso(),
   });
 
   // Log des favoris à chaque changement
   useEffect(() => {
     if (favorites.length > 0) {
-      console.log('📚 Favoris de books:', favorites);
-      console.log('📚 Nombre de favoris:', favorites.length);
+      console.log('👤 Favoris de personnages:', favorites);
+      console.log('👤 Nombre de favoris:', favorites.length);
     }
   }, [favorites]);
 
   // Filtrer selon le toggle
-  const displayedBooks = showOnlyFavorites ? books.filter((book) => favorites.includes(book.number.toString())) : books;
+  const displayedPersonnages = showOnlyFavorites
+    ? personnages.filter((perso) => favorites.includes(perso.index.toString()))
+    : personnages;
 
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>{error.message}</div>;
@@ -68,7 +70,7 @@ const Books = () => {
             fontWeight: 600,
           }}
         >
-          Livres {showOnlyFavorites && `(${displayedBooks.length} favoris)`}
+          Personnages {showOnlyFavorites && `(${displayedPersonnages.length} favoris)`}
         </Typography>
         <FormControlLabel
           control={
@@ -82,7 +84,7 @@ const Books = () => {
         />
       </Box>
 
-      {displayedBooks.length === 0 && showOnlyFavorites ? (
+      {displayedPersonnages.length === 0 && showOnlyFavorites ? (
         <Typography
           variant="body1"
           sx={{
@@ -92,7 +94,7 @@ const Books = () => {
             py: 4,
           }}
         >
-          Aucun livre favori pour le moment. Cliquez sur ❤️ pour ajouter des livres à vos favoris !
+          Aucun personnage favori pour le moment. Cliquez sur ❤️ pour ajouter des personnages à vos favoris !
         </Typography>
       ) : (
         <Swiper
@@ -130,9 +132,9 @@ const Books = () => {
             },
           }}
         >
-          {displayedBooks.map((book, index) => (
+          {displayedPersonnages.map((perso, index) => (
             <SwiperSlide
-              key={book.number}
+              key={perso.index}
               style={{
                 display: 'flex',
                 height: 'auto',
@@ -162,17 +164,17 @@ const Books = () => {
                 >
                   <CardMedia
                     component="img"
-                    image={book.cover}
-                    alt={`Couverture de ${book.title}`}
-                    style={{ width: '100%', height: 'auto' }}
+                    image={perso.image}
+                    alt={`Image de ${perso.fullName}`}
+                    sx={{ objectFit: 'cover', height: 200 }}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-                      {book.title}
+                      {perso.fullName}
                     </Typography>
 
                     <Typography variant="body2" color="text.secondary">
-                      {book.description.length > 50 ? book.description.slice(0, 50) + '...' : book.description}
+                      {perso.nickname.length > 50 ? perso.nickname.slice(0, 50) + '...' : perso.nickname}
                     </Typography>
                   </CardContent>
                 </CardActionArea>
@@ -182,12 +184,12 @@ const Books = () => {
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleFavorite(book.number.toString());
+                      toggleFavorite(perso.index.toString());
                     }}
                     color="error"
-                    aria-label={isFavorite(book.number.toString()) ? 'retirer des favoris' : 'ajouter aux favoris'}
+                    aria-label={isFavorite(perso.index.toString()) ? 'retirer des favoris' : 'ajouter aux favoris'}
                   >
-                    {isFavorite(book.number.toString()) ? <Favorite /> : <FavoriteBorder />}
+                    {isFavorite(perso.index.toString()) ? <Favorite /> : <FavoriteBorder />}
                   </IconButton>
                 </CardActions>
               </Card>
@@ -199,4 +201,4 @@ const Books = () => {
   );
 };
 
-export default Books;
+export default Personnage;
