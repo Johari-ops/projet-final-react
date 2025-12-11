@@ -1,21 +1,26 @@
-import { useRef } from 'react'
-import Spells from '../components/List/Spells'
-import Books from '../components/List/Books'
-import Perso from '../components/List/Perso'
-import Houses from '../components/List/Houses'
-import ResponsiveAppBar from '../components/AppBar'
+import { useRef } from 'react';
+import Spells from '../components/List/Spells';
+import Books from '../components/List/Books';
+import Perso from '../components/List/Perso';
+import Houses from '../components/List/Houses';
+import ResponsiveAppBar from '../components/AppBar';
 
-const Home = (props : any) => {
-  const { darkMode, toggleDarkMode } = props;
+type HomeProps = {
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+};
+
+const Home = ({ darkMode, toggleDarkMode }: HomeProps) => {
   const booksRef = useRef<HTMLDivElement>(null);
   const persoRef = useRef<HTMLDivElement>(null);
   const housesRef = useRef<HTMLDivElement>(null);
   const spellsRef = useRef<HTMLDivElement>(null);
+  type SectionName = 'Livres' | 'Personnages' | 'Maisons' | 'Sorts';
 
   // Fonction pour scroller vers une section
-  const scrollToSection = (section: string) => {
+  const scrollToSection = (section: SectionName) => {
     let ref;
-    switch(section) {
+    switch (section) {
       case 'Livres':
         ref = booksRef;
         break;
@@ -31,7 +36,7 @@ const Home = (props : any) => {
       default:
         return;
     }
-    
+
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
@@ -44,14 +49,14 @@ const Home = (props : any) => {
       <div ref={persoRef}>
         <Perso />
       </div>
-      <div ref={housesRef} >
+      <div ref={housesRef}>
         <Houses />
       </div>
       <div ref={spellsRef}>
         <Spells />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

@@ -16,237 +16,236 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import hogwartsLogo from '../assets/hp.png';
 
-const pages = ['Livres', 'Personnages', 'Maisons', 'Sorts'];
+const pages = ['Livres', 'Personnages', 'Maisons', 'Sorts'] as const;
+type PageName = (typeof pages)[number];
 
-function ResponsiveAppBar(props: any) {
-    const { onNavigate, darkMode, toggleDarkMode } = props;
+type ResponsiveAppBarProps = {
+  onNavigate?: (page: PageName) => void;
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+};
 
-    const [nom] = useLocalStorage<string>("nom", "");
-    const [prenom] = useLocalStorage<string>("prenom", "");
-    const [email] = useLocalStorage<string>("email", "");
+function ResponsiveAppBar({ onNavigate, darkMode, toggleDarkMode }: ResponsiveAppBarProps) {
+  const [nom] = useLocalStorage<string>('nom', '');
+  const [prenom] = useLocalStorage<string>('prenom', '');
+  const [email] = useLocalStorage<string>('email', '');
 
-    const settings = [nom, prenom, email, 'Déconnexion'];
+  const settings = [nom, prenom, email, 'Déconnexion'];
 
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = (setting: string) => {
+    if (setting === 'Déconnexion') {
+      localStorage.clear();
+      window.location.reload();
+    }
+    setAnchorElUser(null);
+  };
+
+  const handlePageClick = (page: PageName) => {
+    handleCloseNavMenu();
+    onNavigate?.(page);
+  };
+
+  function stringAvatar(name: string) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
     };
+  }
 
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget);
-    };
+  function stringToColor(string: string) {
+    let hash = 0;
+    let i;
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
-    const handleCloseUserMenu = (setting: string) => {
-        if (setting === 'Déconnexion') {
-            localStorage.clear();
-            window.location.reload();
-        }
-        setAnchorElUser(null);;
-    };
-
-    const handlePageClick = (page: string) => {
-        handleCloseNavMenu();
-        onNavigate?.(page);
-    };
-
-    function stringAvatar(name: string) {
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-        };
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    function stringToColor(string: string) {
-        let hash = 0;
-        let i;
+    let color = '#';
 
-        /* eslint-disable no-bitwise */
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.slice(-2);
-        }
-        /* eslint-enable no-bitwise */
-
-        return color;
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
     }
 
-    return (
-        <AppBar position="fixed">
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    {/* Logo Desktop */}
-                    <Box
-                        component="img"
-                        src={hogwartsLogo}
-                        alt="Hogwarts"
-                        sx={{
-                            display: { xs: 'none', md: 'flex' },
-                            mr: 1,
-                            width: 40,
-                            height: 40,
-                            objectFit: 'contain',
-                        }}
-                    />
+    return color;
+  }
 
-                    {/* Titre Desktop */}
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        Hogwarts
-                    </Typography>
+  return (
+    <AppBar position="fixed">
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          {/* Logo Desktop */}
+          <Box
+            component="img"
+            src={hogwartsLogo}
+            alt="Hogwarts"
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              mr: 1,
+              width: 40,
+              height: 40,
+              objectFit: 'contain',
+            }}
+          />
 
-                    {/* Menu hamburger Mobile */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{ display: { xs: 'block', md: 'none' } }}
-                        >
-                            {pages.map((page) => (
-                                <MenuItem key={page} onClick={() => handlePageClick(page)}>
-                                    <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
+          {/* Titre Desktop */}
+          <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            href="#app-bar-with-responsive-menu"
+            sx={{
+              mr: 2,
+              display: { xs: 'none', md: 'flex' },
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            Hogwarts
+          </Typography>
 
-                    {/* Logo Mobile */}
-                    <Box
-                        component="img"
-                        src={hogwartsLogo}
-                        alt="Hogwarts"
-                        sx={{
-                            display: { xs: 'flex', md: 'none' },
-                            mr: 1,
-                            width: 32,
-                            height: 32,
-                            objectFit: 'contain',
-                        }}
-                    />
+          {/* Menu hamburger Mobile */}
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{ display: { xs: 'block', md: 'none' } }}
+            >
+              {pages.map((page) => (
+                <MenuItem key={page} onClick={() => handlePageClick(page)}>
+                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
 
-                    {/* Titre Mobile */}
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        Hogwarts
-                    </Typography>
+          {/* Logo Mobile */}
+          <Box
+            component="img"
+            src={hogwartsLogo}
+            alt="Hogwarts"
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              mr: 1,
+              width: 32,
+              height: 32,
+              objectFit: 'contain',
+            }}
+          />
 
-                    {/* Menu de navigation Desktop */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={() => handlePageClick(page)}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                {page}
-                            </Button>
-                        ))}
-                    </Box>
+          {/* Titre Mobile */}
+          <Typography
+            variant="h5"
+            noWrap
+            component="a"
+            href="#app-bar-with-responsive-menu"
+            sx={{
+              mr: 2,
+              display: { xs: 'flex', md: 'none' },
+              flexGrow: 1,
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            Hogwarts
+          </Typography>
 
-                    {/* Bouton Dark Mode Toggle */}
-                    <Box sx={{ flexGrow: 0, mr: 2 }}>
-                        <Tooltip title={darkMode ? "Mode clair" : "Mode sombre"}>
-                            <IconButton onClick={toggleDarkMode} color="inherit">
-                                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
+          {/* Menu de navigation Desktop */}
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            {pages.map((page) => (
+              <Button key={page} onClick={() => handlePageClick(page)} sx={{ my: 2, color: 'white', display: 'block' }}>
+                {page}
+              </Button>
+            ))}
+          </Box>
 
-                    {/* Menu utilisateur avec Avatar */}
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar {...stringAvatar(nom + " " + prenom)} />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={() => handleCloseUserMenu(setting)}>
-                                    <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
-                </Toolbar>
-            </Container>
-        </AppBar>
-    );
+          {/* Bouton Dark Mode Toggle */}
+          <Box sx={{ flexGrow: 0, mr: 2 }}>
+            <Tooltip title={darkMode ? 'Mode clair' : 'Mode sombre'}>
+              <IconButton onClick={toggleDarkMode} color="inherit">
+                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+
+          {/* Menu utilisateur avec Avatar */}
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar {...stringAvatar(nom + ' ' + prenom)} />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting} onClick={() => handleCloseUserMenu(setting)}>
+                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
+  );
 }
 
 export default ResponsiveAppBar;
