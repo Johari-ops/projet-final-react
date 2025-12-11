@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import Spells from '../components/List/Spells';
 import Books from '../components/List/Books';
-import Perso from '../components/List/Perso';
 import Houses from '../components/List/Houses';
 import ResponsiveAppBar from '../components/AppBar';
+import Personnage from '../components/List/Personnage';
 
 type HomeProps = {
   darkMode: boolean;
@@ -48,7 +48,7 @@ const Home = ({ darkMode, toggleDarkMode }: HomeProps) => {
         <Books />
       </div>
       <div ref={persoRef}>
-        <Perso />
+        <Personnage />
       </div>
       <div ref={housesRef}>
         <Houses />

@@ -1,52 +1,84 @@
-import { TextField } from '@mui/material'
-import { Box } from '@mui/material'
-import { Button } from '@mui/material'
-import { useLocalStorage } from '../hooks/useLocalStorage'
+import { TextField, Box, Button } from '@mui/material';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+
+const userFormSchema = z.object({
+  nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
+  prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
+  email: z.string().email("L'email doit être valide"),
+});
+
+type UserFormData = z.infer<typeof userFormSchema>;
 
 const Login = ({ onLogin }: { onLogin: () => void }) => {
-  const [nom, setNom] = useLocalStorage<string>("nom", "");
-  const [prenom, setPrenom] = useLocalStorage<string>("prenom", "");
-  const [email, setEmail] = useLocalStorage<string>("email", "");
+  // tu peux continuer à lire / écrire dans le localStorage
+  const [storedNom, setStoredNom] = useLocalStorage<string>('nom', '');
+  const [storedPrenom, setStoredPrenom] = useLocalStorage<string>('prenom', '');
+  const [storedEmail, setStoredEmail] = useLocalStorage<string>('email', '');
 
-  // Gère la soumission du formulaire
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserFormData>({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: {
+      nom: storedNom,
+      prenom: storedPrenom,
+      email: storedEmail,
+    },
+  });
+
+  const onSubmit = (data: UserFormData) => {
+    console.log('SUBMIT', data);
+    setStoredNom(data.nom);
+    setStoredPrenom(data.prenom);
+    setStoredEmail(data.email);
     onLogin();
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ display: "flex", flexDirection: "column", gap: 2, width: 300, margin: "auto", mt: 5 }}
-    >
-      <TextField
-        label="Nom"
-        variant="outlined"
-        value={nom}
-        onChange={(e) => setNom(e.target.value)}
-        required
-      />
-      <TextField
-        label="Prénom"
-        variant="outlined"
-        value={prenom}
-        onChange={(e) => setPrenom(e.target.value)}
-        required
-      />
-      <TextField
-        label="Email"
-        variant="outlined"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <Button variant="contained" type="submit">
-        Confirmer
-      </Button>
-    </Box>
-  )
-}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          width: 300,
+          margin: 'auto',
+          mt: 5,
+        }}
+      >
+        <TextField
+          label="Nom"
+          variant="outlined"
+          {...register('nom')}
+          error={!!errors.nom}
+          helperText={errors.nom?.message}
+        />
+        <TextField
+          label="Prénom"
+          variant="outlined"
+          {...register('prenom')}
+          error={!!errors.prenom}
+          helperText={errors.prenom?.message}
+        />
+        <TextField
+          label="Email"
+          type="email"
+          variant="outlined"
+          {...register('email')}
+          error={!!errors.email}
+          helperText={errors.email?.message}
+        />
+        <Button variant="contained" type="submit">
+          Confirmer
+        </Button>
+      </Box>
+    </form>
+  );
+};
 
-export default Login
+export default Login;

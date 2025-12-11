@@ -2,7 +2,7 @@ import Home from './pages/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Login from './pages/Login';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -19,10 +19,6 @@ function App() {
     },
   });
 
-  useEffect(() => {
-    localStorage.clear();
-  }, []);
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = () => {
@@ -37,11 +33,7 @@ function App() {
     <>
       <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
         <CssBaseline />
-        {isLoggedIn ? (
-          <Home darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-        ) : (
-          <Login onLogin={handleLogin} />
-        )}
+        {isLoggedIn ? <Home darkMode={darkMode} toggleDarkMode={toggleDarkMode} /> : <Login onLogin={handleLogin} />}
       </ThemeProvider>
     </>
   );

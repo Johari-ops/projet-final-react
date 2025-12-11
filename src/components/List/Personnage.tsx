@@ -15,7 +15,7 @@ import { getPerso } from '../../services/apiServices';
 import { useQuery } from '@tanstack/react-query';
 import type { Perso } from '../../models/Perso';
 
-const Perso = () => {
+const Personnage = () => {
   const [selectedCard, setSelectedCard] = useState(0);
 
   const {
@@ -135,4 +135,4 @@ const Perso = () => {
   );
 };
 
-export default Perso;
+export default Personnage;
