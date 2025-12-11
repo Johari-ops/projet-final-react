@@ -13,9 +13,14 @@ import 'swiper/css/navigation';
 import type { House } from '../../models/House';
 import { useQuery } from '@tanstack/react-query';
 import { getHouses } from '../../services/apiServices';
+import { useFavorites } from '../../hooks/useFavorites';
+import IconButton from '@mui/material/IconButton';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
 
 const Houses = () => {
   const [selectedCard, setSelectedCard] = useState(0);
+  const { toggleFavorite, isFavorite } = useFavorites('houses-favorites');
 
   const {
     data: houses = [],
@@ -114,6 +119,16 @@ const Houses = () => {
 
                 <CardActions>
                   <Button size="small">Voir plus</Button>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(house.index.toString());
+                    }}
+                    color="error"
+                    aria-label="ajouter aux favoris"
+                  >
+                    {isFavorite(house.index.toString()) ? <Favorite /> : <FavoriteBorder />}
+                  </IconButton>
                 </CardActions>
               </Card>
             </SwiperSlide>

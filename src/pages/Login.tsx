@@ -13,7 +13,6 @@ const userFormSchema = z.object({
 type UserFormData = z.infer<typeof userFormSchema>;
 
 const Login = ({ onLogin }: { onLogin: () => void }) => {
-  // tu peux continuer à lire / écrire dans le localStorage
   const [storedNom, setStoredNom] = useLocalStorage<string>('nom', '');
   const [storedPrenom, setStoredPrenom] = useLocalStorage<string>('prenom', '');
   const [storedEmail, setStoredEmail] = useLocalStorage<string>('email', '');

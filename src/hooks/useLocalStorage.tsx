@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+// hooks/useLocalStorage.tsx
+import { useState, useEffect } from 'react';
 
 function getStorageValue<T>(key: string, defaultValue: T): T {
   const saved = localStorage.getItem(key);
@@ -12,7 +13,7 @@ function getStorageValue<T>(key: string, defaultValue: T): T {
   return defaultValue;
 }
 
-export const useLocalStorage = <T,>(key: string, defaultValue: T): [T, (value: T) => void] => {
+export const useLocalStorage = <T,>(key: string, defaultValue: T): [T, (value: T | ((prev: T) => T)) => void] => {
   const [value, setValue] = useState<T>(() => getStorageValue<T>(key, defaultValue));
 
   useEffect(() => {

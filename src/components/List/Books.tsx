@@ -14,9 +14,14 @@ import 'swiper/css/navigation';
 import { getBooks } from '../../services/apiServices';
 import { useQuery } from '@tanstack/react-query';
 import type { Book } from '../../models/Books';
+import { useFavorites } from '../../hooks/useFavorites';
+import IconButton from '@mui/material/IconButton';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
 
 const Books = () => {
   const [selectedCard, setSelectedCard] = useState(0);
+  const { toggleFavorite, isFavorite } = useFavorites('books-favorites');
 
   const {
     data: books = [],
@@ -126,6 +131,16 @@ const Books = () => {
 
               <CardActions>
                 <Button size="small">Voir plus</Button>
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(book.number.toString());
+                  }}
+                  color="error"
+                  aria-label="ajouter aux favoris"
+                >
+                  {isFavorite(book.number.toString()) ? <Favorite /> : <FavoriteBorder />}
+                </IconButton>
               </CardActions>
             </Card>
           </SwiperSlide>
