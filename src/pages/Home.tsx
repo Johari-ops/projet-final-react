@@ -15,6 +15,7 @@ const Home = ({ darkMode, toggleDarkMode }: HomeProps) => {
   const persoRef = useRef<HTMLDivElement>(null);
   const housesRef = useRef<HTMLDivElement>(null);
   const spellsRef = useRef<HTMLDivElement>(null);
+
   type SectionName = 'Livres' | 'Personnages' | 'Maisons' | 'Sorts';
 
   // Fonction pour scroller vers une section

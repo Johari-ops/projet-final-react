@@ -1,4 +1,3 @@
-import useFetchPerso from '../../hooks/useFetchPerso';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -8,27 +7,38 @@ import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 import { CardActionArea } from '@mui/material';
 import { useState } from 'react';
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { getPerso } from '../../services/apiServices';
+import { useQuery } from '@tanstack/react-query';
+import type { Perso } from '../../models/Perso';
 
 const Perso = () => {
-  const { personnages, loading, error } = useFetchPerso();
   const [selectedCard, setSelectedCard] = useState(0);
 
-  if (loading) return <div>Chargement...</div>;
-  if (error) return <div>{error}</div>;
+  const {
+    data: personnages = [],
+    isLoading,
+    error,
+  } = useQuery<Perso[], Error>({
+    queryKey: ['perso-list'],
+    queryFn: () => getPerso(),
+  });
+
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>{error.message}</div>;
 
   return (
     <>
-      <Box sx={{ width: "100%", mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
+      <Box sx={{ width: '100%', mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
         <Typography
           variant="h4"
           sx={{
             fontWeight: 600,
             mb: 2,
-            px: { xs: 2, sm: 10, md: 0.5 }
+            px: { xs: 2, sm: 10, md: 0.5 },
           }}
         >
           Personnages :
@@ -67,19 +77,20 @@ const Perso = () => {
               spaceBetween: 20,
             },
           }}
-          >
+        >
           {personnages.map((perso, index) => (
-            <SwiperSlide key={perso.index}
+            <SwiperSlide
+              key={perso.index}
               style={{
-                display: "flex",
-                height: "auto",
+                display: 'flex',
+                height: 'auto',
               }}
             >
               <Card
                 sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
                 }}
               >
                 <CardActionArea
@@ -99,7 +110,7 @@ const Perso = () => {
                     component="img"
                     image={perso.image}
                     alt={`Image de ${perso.fullName}`}
-                    sx={{ objectFit: "cover" }}
+                    sx={{ objectFit: 'cover' }}
                   />
                   <CardContent sx={{ height: '100%' }}>
                     <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
@@ -107,9 +118,7 @@ const Perso = () => {
                     </Typography>
 
                     <Typography variant="body2" color="text.secondary">
-                      {perso.nickname.length > 50
-                        ? perso.nickname.slice(0, 50) + '...'
-                        : perso.nickname}
+                      {perso.nickname.length > 50 ? perso.nickname.slice(0, 50) + '...' : perso.nickname}
                     </Typography>
                   </CardContent>
                 </CardActionArea>

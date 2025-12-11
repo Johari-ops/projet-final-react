@@ -1,31 +1,40 @@
-import useFetchSpells from '../../hooks/useFetchSpell';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import { useState } from 'react';
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import type { Spell } from '../../models/Spells';
+import { useQuery } from '@tanstack/react-query';
+import { getSpells } from '../../services/apiServices';
 
 const Spells = () => {
-  const { spells, loading, error } = useFetchSpells();
   const [selectedCard, setSelectedCard] = useState(0);
+  const {
+    data: spells = [],
+    isLoading,
+    error,
+  } = useQuery<Spell[], Error>({
+    queryKey: ['spell-list'],
+    queryFn: () => getSpells(),
+  });
 
-  if (loading) return <div>Chargement...</div>;
-  if (error) return <div>{error}</div>;
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>{error.message}</div>;
 
   return (
     <>
-      <Box sx={{ width: "100%", mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
+      <Box sx={{ width: '100%', mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
         <Typography
           variant="h4"
           sx={{
             fontWeight: 600,
             mb: 2,
-            px: { xs: 2, sm: 10, md: 0.5 }
+            px: { xs: 2, sm: 10, md: 0.5 },
           }}
         >
           Sorts :
@@ -68,20 +77,20 @@ const Spells = () => {
           }}
         >
           {spells.map((spell, index) => (
-            <SwiperSlide key={spell.index} style={{ height: "auto" }}>
-              <Card sx={{ height: "100%" }}>
+            <SwiperSlide key={spell.index} style={{ height: 'auto' }}>
+              <Card sx={{ height: '100%' }}>
                 <CardActionArea
                   onClick={() => setSelectedCard(index)}
                   data-active={selectedCard === index ? '' : undefined}
                   sx={{
-                    height: "100%",
+                    height: '100%',
                     '&[data-active]': {
                       backgroundColor: 'action.selected',
                       '&:hover': { backgroundColor: 'action.selectedHover' },
                     },
                   }}
                 >
-                  <CardContent sx={{ height: "100%" }}>
+                  <CardContent sx={{ height: '100%' }}>
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
                       {spell.spell}
                     </Typography>
@@ -94,7 +103,6 @@ const Spells = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-
       </Box>
     </>
   );

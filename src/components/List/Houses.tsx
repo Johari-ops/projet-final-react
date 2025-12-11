@@ -1,4 +1,3 @@
-import useFetchHouses from '../../hooks/useFetchHouses';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -7,27 +6,38 @@ import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import type { House } from '../../models/House';
+import { useQuery } from '@tanstack/react-query';
+import { getHouses } from '../../services/apiServices';
 
 const Houses = () => {
-  const { houses, loading, error } = useFetchHouses();
   const [selectedCard, setSelectedCard] = useState(0);
 
-  if (loading) return <div>Chargement...</div>;
-  if (error) return <div>{error}</div>;
+  const {
+    data: houses = [],
+    isLoading,
+    error,
+  } = useQuery<House[], Error>({
+    queryKey: ['house-list'],
+    queryFn: () => getHouses(),
+  });
+
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>{error.message}</div>;
 
   return (
     <>
-      <Box sx={{ width: "100%", mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
+      <Box sx={{ width: '100%', mt: 4, px: { xs: 2, sm: 3, md: 1 } }}>
         <Typography
           variant="h4"
           sx={{
             fontWeight: 600,
             mb: 2,
-            px: { xs: 2, sm: 10, md: 0.5 }
+            px: { xs: 2, sm: 10, md: 0.5 },
           }}
         >
           Maisons :
@@ -67,7 +77,6 @@ const Houses = () => {
             },
           }}
         >
-
           {houses.map((house, index) => (
             <SwiperSlide key={house.index}>
               <Card>
@@ -84,7 +93,7 @@ const Houses = () => {
                     },
                   }}
                 >
-                  <Typography variant="h4" component="div" align='center' margin={10}>
+                  <Typography variant="h4" component="div" align="center" margin={10}>
                     {house.emoji}
                   </Typography>
                   <CardContent sx={{ height: '100%' }}>
