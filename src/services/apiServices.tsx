@@ -4,9 +4,11 @@ import type { Perso } from '../models/Perso';
 import type { House } from '../models/House';
 import type { Spell } from '../models/Spells';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 async function getBooks(): Promise<Book[]> {
   try {
-    const response = await axios.get<Book[]>('https://potterapi-fedeperin.vercel.app/fr/books');
+    const response = await axios.get<Book[]>(`${apiUrl}books`);
     return response.data;
   } catch (error) {
     console.error('Erreur dans getBooks:', error);
@@ -16,7 +18,7 @@ async function getBooks(): Promise<Book[]> {
 
 async function getPerso(): Promise<Perso[]> {
   try {
-    const response = await axios.get<Perso[]>('https://potterapi-fedeperin.vercel.app/fr/characters');
+    const response = await axios.get<Perso[]>(`${apiUrl}characters`);
     return response.data;
   } catch (error) {
     console.error('Erreur dans getPerso:', error);
@@ -26,7 +28,7 @@ async function getPerso(): Promise<Perso[]> {
 
 async function getHouses(): Promise<House[]> {
   try {
-    const response = await axios.get<House[]>('https://potterapi-fedeperin.vercel.app/fr/houses');
+    const response = await axios.get<House[]>(`${apiUrl}houses`);
     return response.data;
   } catch (error) {
     console.error('Erreur dans getPerso:', error);
@@ -36,7 +38,7 @@ async function getHouses(): Promise<House[]> {
 
 async function getSpells(): Promise<Spell[]> {
   try {
-    const response = await axios.get<Spell[]>('https://potterapi-fedeperin.vercel.app/fr/spells');
+    const response = await axios.get<Spell[]>(`${apiUrl}spells`);
     return response.data;
   } catch (error) {
     console.error('Erreur dans getSpells:', error);
