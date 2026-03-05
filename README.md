@@ -72,26 +72,34 @@ export default defineConfig([
 ]);
 ```
 
-création du Dockerfile avec le contenu,
+# Création du Dockerfile avec le contenu,
 
+```bash
 docker build -t projet-final:latest .
 
 docker run -p 8080:80 projet-final:latest
+```
 
 le docker sera lancer sur localhost:8080
 
+```bash
 docker login ghcr.io
+```
 
 pour se log avec le nom de notre github et le token générer
 
+```bash
 docker tag projet-final ghcr.io/johari-ops/projet-final:latest
 
 docker push ghcr.io/johari-ops/projet-final:latest
+```
 
 apres connexion en ssh avec les données
 
 lancer le conteneur docker sur le serveur distant :
 
+```bash
 docker run -d -p 8080:8080 --name projet-final ghcr.io/johari-ops/projet-final:latest
+```
 
 http://51.210.120.82:80
