@@ -3,8 +3,8 @@ import { vi, expect, test } from 'vitest';
 import Login from './Login';
 
 test('remplit les champs et appelle onLogin au clic', async () => {
-  const mockOnLogin = vi.fn();
-  render(<Login onLogin={mockOnLogin} />);
+  const login = vi.fn();
+  render(<Login onLogin={login} />);
 
   //Utilisation de ^ et $ pour une correspondance exacte du nom du champ (à cause de mui)
   fireEvent.change(screen.getByRole('textbox', { name: /^nom$/i }), {
@@ -25,7 +25,7 @@ test('remplit les champs et appelle onLogin au clic', async () => {
 
   // 4. Attente du callback
   await waitFor(() => {
-    expect(mockOnLogin).toHaveBeenCalledTimes(1);
+    expect(login).toHaveBeenCalledTimes(1);
   });
   // Vérifier que les données sont bien dans le localStorage de JSDOM
   expect(localStorage.getItem('nom')).toContain('Potter');
