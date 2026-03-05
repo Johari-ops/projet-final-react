@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import { useState } from 'react';
 
 function App() {
+  const [count, setCount] = useState(0);
   const [darkMode, setDarkMode] = useState(true);
 
   const darkTheme = createTheme({
@@ -33,6 +34,7 @@ function App() {
     <>
       <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
         <CssBaseline />
+        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
         {isLoggedIn ? <Home darkMode={darkMode} toggleDarkMode={toggleDarkMode} /> : <Login onLogin={handleLogin} />}
       </ThemeProvider>
     </>
