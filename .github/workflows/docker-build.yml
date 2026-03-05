@@ -19,7 +19,15 @@ jobs:
           password: ${{ secrets.PAT_GITHUB_PACKAGE_PUBLICATION }}
       - name: Build and push Docker image
         run: |
-          docker build -t ghcr.io/projet-final:latest .
-          docker tag ghcr.io/projet-final:latest ghcr.io/projet-final:$GITHUB_SHA  
-          docker push ghcr.io/projet-final:latest
-          docker push ghcr.io/projet-final-react:$GITHUB_SHA
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/projet-final
+          IMAGE_NAME=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')
+
+          # Construction
+          docker build -t $IMAGE_NAME:latest .
+
+          # Tagging avec le SHA du commit
+          docker tag $IMAGE_NAME:latest $IMAGE_NAME:$GITHUB_SHA
+
+          # Push des deux tags
+          docker push $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:$GITHUB_SHA
